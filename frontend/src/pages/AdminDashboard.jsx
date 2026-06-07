@@ -53,8 +53,9 @@ const AdminDashboard = () => {
   const [actionLoading, setActionLoading] = useState(null);
 
   useEffect(() => {
+    console.log('[AdminDashboard] useEffect triggered. Fetching dashboard data. User:', user?.email);
     fetchData();
-  }, []);
+  }, [user]);
 
   useEffect(() => {
     if (darkMode) {
@@ -66,6 +67,7 @@ const AdminDashboard = () => {
   }, [darkMode]);
 
   const fetchData = async () => {
+    console.log('[AdminDashboard] Fetching administrative metrics and records...');
     setLoading(true);
     setError('');
     try {
@@ -81,21 +83,44 @@ const AdminDashboard = () => {
       ]);
 
       if (dashRes.success) {
+        console.log('[AdminDashboard] Dashboard summary loaded');
         setSummary(dashRes.data.summary);
         setWidgets(dashRes.data.widgets);
       }
-      if (usersRes.success) setUsers(usersRes.data);
-      if (ngosRes.success) setNgos(ngosRes.data);
-      if (listingsRes.success) setListings(listingsRes.data);
-      if (claimsRes.success) setClaims(claimsRes.data);
-      if (notifRes.success) setNotifications(notifRes.data);
-      if (logsRes.success) setLogs(logsRes.data);
-      if (analyticsRes.success) setAnalytics(analyticsRes.data);
+      if (usersRes.success) {
+        console.log('[AdminDashboard] Users loaded. Count:', usersRes.data?.length);
+        setUsers(usersRes.data);
+      }
+      if (ngosRes.success) {
+        console.log('[AdminDashboard] NGOs loaded. Count:', ngosRes.data?.length);
+        setNgos(ngosRes.data);
+      }
+      if (listingsRes.success) {
+        console.log('[AdminDashboard] Food listings loaded. Count:', listingsRes.data?.length);
+        setListings(listingsRes.data);
+      }
+      if (claimsRes.success) {
+        console.log('[AdminDashboard] Claims loaded. Count:', claimsRes.data?.length);
+        setClaims(claimsRes.data);
+      }
+      if (notifRes.success) {
+        console.log('[AdminDashboard] Notifications loaded. Count:', notifRes.data?.length);
+        setNotifications(notifRes.data);
+      }
+      if (logsRes.success) {
+        console.log('[AdminDashboard] Logs loaded. Count:', logsRes.data?.length);
+        setLogs(logsRes.data);
+      }
+      if (analyticsRes.success) {
+        console.log('[AdminDashboard] Analytics loaded');
+        setAnalytics(analyticsRes.data);
+      }
 
     } catch (err) {
-      console.error(err);
+      console.error('[AdminDashboard] Error loading admin dashboard metrics:', err);
       setError(err.response?.data?.message || 'Error loading administrator console.');
     } finally {
+      console.log('[AdminDashboard] Setting loading to false');
       setLoading(false);
     }
   };

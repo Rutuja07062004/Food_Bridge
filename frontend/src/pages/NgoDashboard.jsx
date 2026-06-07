@@ -89,6 +89,7 @@ const NgoDashboard = () => {
   const [showNotifications, setShowNotifications] = useState(false);
 
   const fetchData = async () => {
+    console.log('[NgoDashboard] Fetching dashboard data with filters:', { page, category, sortBy, search });
     setLoading(true);
     try {
       const params = {
@@ -109,25 +110,36 @@ const NgoDashboard = () => {
       ]);
 
       if (foodRes.success) {
+        console.log('[NgoDashboard] Successfully fetched food listings. Count:', foodRes.data?.length);
         setListings(foodRes.data);
         setPages(foodRes.pages || 1);
         setTotalListings(foodRes.total || 0);
+      } else {
+        console.warn('[NgoDashboard] Failed to fetch food listings:', foodRes.message);
       }
+      
       if (claimRes.success) {
+        console.log('[NgoDashboard] Successfully fetched NGO claims. Count:', claimRes.data?.length);
         setClaims(claimRes.data);
+      } else {
+        console.warn('[NgoDashboard] Failed to fetch claims:', claimRes.message);
       }
     } catch (err) {
-      console.error(err);
+      console.error('[NgoDashboard] Error loading dashboard data:', err);
     } finally {
+      console.log('[NgoDashboard] Setting loading to false');
       setLoading(false);
     }
   };
 
   useEffect(() => {
+    console.log('[NgoDashboard] useEffect triggered. User status:', user?.status);
     if (user?.status === 'approved') {
       fetchData();
+    } else {
+      console.log('[NgoDashboard] Skipping data fetch because user is not approved or loaded yet.');
     }
-  }, [page, category, sortBy]);
+  }, [page, category, sortBy, user]);
 
   const handleSearchSubmit = (e) => {
     e.preventDefault();

@@ -49,30 +49,42 @@ const DonorDashboard = () => {
   const [analyticsLoading, setAnalyticsLoading] = useState(true);
 
   const loadData = async () => {
+    console.log('[DonorDashboard] Loading stats, claims, and analytics data...');
     try {
       setAnalyticsLoading(true);
       const [statsRes, claimsRes, analyticsRes] = await Promise.all([
         foodService.getDonorStats(),
         claimsService.getClaims(),
         foodService.getDonorAnalytics().catch(err => {
-          console.warn('Donor analytics failed:', err);
+          console.warn('[DonorDashboard] Donor analytics failed:', err);
           return { success: false };
         })
       ]);
-      if (statsRes.success) setStats(statsRes.data);
-      if (claimsRes.success) setClaims(claimsRes.data);
-      if (analyticsRes?.success) setAnalytics(analyticsRes.data);
+      if (statsRes.success) {
+        console.log('[DonorDashboard] Stats loaded successfully:', statsRes.data);
+        setStats(statsRes.data);
+      }
+      if (claimsRes.success) {
+        console.log('[DonorDashboard] Claims loaded successfully. Count:', claimsRes.data?.length);
+        setClaims(claimsRes.data);
+      }
+      if (analyticsRes?.success) {
+        console.log('[DonorDashboard] Analytics loaded successfully');
+        setAnalytics(analyticsRes.data);
+      }
     } catch (err) {
-      console.error('Dashboard load error:', err);
+      console.error('[DonorDashboard] Dashboard load error:', err);
     } finally {
+      console.log('[DonorDashboard] Setting loading to false');
       setLoading(false);
       setAnalyticsLoading(false);
     }
   };
 
   useEffect(() => {
+    console.log('[DonorDashboard] useEffect triggered. User:', user?.email);
     loadData();
-  }, []);
+  }, [user]);
 
   const handleClaimAction = async (claimId, action) => {
     setActionLoadingId(claimId);
